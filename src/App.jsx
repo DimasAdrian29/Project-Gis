@@ -4,7 +4,7 @@ import MapPage from "./pages/MapPage";
 import DaftarSekolah from "./pages/DaftarSekolah";
 import AboutPage from "./pages/AboutPage";
 import { Footer } from "./components/Footer";
-import { Navbar } from "./components/navbar";
+import { Navbar } from "./components/Navbar";
 
 // Import CSS Leaflet dan fix icon
 import 'leaflet/dist/leaflet.css';
