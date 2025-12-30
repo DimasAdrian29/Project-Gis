@@ -77,6 +77,13 @@ export function Navbar() {
           >
             Tentang
           </Link>
+          {/* Menu Tentang (Style Link) */}
+          <Link
+            to="/daftar"
+            className="text-[#697A98] font-medium hover:text-[#4675C0] hover:scale-105 transition-all duration-300"
+          >
+            Daftar Sekolah
+          </Link>
           
         </div>
 
