@@ -695,17 +695,7 @@ export default function DaftarSekolah() {
                     <span className="font-bold text-[#19335A]">{filteredSekolah.length}</span> sekolah
                     <span className="text-xs block sm:inline"> ({itemsPerPage} per halaman)</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-xs text-[#697A98]">
-                      Urutkan:
-                    </div>
-                    <select className="text-xs border border-slate-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-[#4675C0]">
-                      <option>Nama A-Z</option>
-                      <option>Nama Z-A</option>
-                      <option>Akreditasi Tertinggi</option>
-                      <option>Status Negeri</option>
-                    </select>
-                  </div>
+              
                 </div>
 
                 {/* School Cards Grid */}
