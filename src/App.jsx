@@ -1,46 +1,101 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
 import DaftarSekolah from "./pages/DaftarSekolah";
 import AboutPage from "./pages/AboutPage";
+import LoginPage from "./pages/LoginPage";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import DashboardLayout from "./layouts/DashboardLayout";
+import SekolahList from "./pages/dashboard/SekolahList";
+import SekolahForm from "./pages/dashboard/SekolahForm";
+import SekolahImport from "./pages/dashboard/SekolahImport";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
+import { getCurrentUser } from "./supabaseClient";
 
-// Import CSS Leaflet dan fix icon
+// Import CSS Leaflet
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import SekolahDetail from "./pages/dashboard/SekolahDetail";
 
-// Fix Leaflet icon issue in React
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const user = getCurrentUser();
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
+
+// Layout untuk public routes (dengan navbar & footer)
+const PublicLayout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      <div className="flex-grow">
+        {children}
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+// Layout untuk dashboard (tanpa navbar & footer)
+const DashboardWrapper = ({ children }) => {
+  return <>{children}</>;
+};
 
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Container Utama */}
       <div className="min-h-screen flex flex-col">
-        
-        <Navbar />
-
-        {/* Main Content Area - Menggunakan semua sisa ruang */}
-        <div className="flex-grow w-full">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/peta" element={<MapPage />} />
-            <Route path="/daftar" element={<DaftarSekolah />} />
-            <Route path="/tentang" element={<AboutPage />} />
-            
-            {/* Route fallback untuk 404 */}
-            <Route path="*" element={
+        <Routes>
+          {/* Public Routes dengan Navbar & Footer */}
+          <Route path="/" element={
+            <PublicLayout>
+              <HomePage />
+            </PublicLayout>
+          } />
+          <Route path="/peta" element={
+            <PublicLayout>
+              <MapPage />
+            </PublicLayout>
+          } />
+          <Route path="/daftar" element={
+            <PublicLayout>
+              <DaftarSekolah />
+            </PublicLayout>
+          } />
+          <Route path="/tentang" element={
+            <PublicLayout>
+              <AboutPage />
+            </PublicLayout>
+          } />
+          <Route path="/login" element={<LoginPage />} />
+          
+          {/* Dashboard Routes tanpa Navbar & Footer */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardWrapper>
+                <DashboardLayout />
+              </DashboardWrapper>
+            </ProtectedRoute>
+          }>
+            <Route index element={<DashboardHome />} />
+            <Route path="sekolah" element={<SekolahList />} />
+            <Route path="sekolah/tambah" element={<SekolahForm />} />
+            <Route path="sekolah/edit/:id" element={<SekolahForm />} />
+            <Route path="sekolah/import" element={<SekolahImport />} />
+            <Route path="sekolah/detail/:id" element={<SekolahDetail />} />
+            <Route path="users" element={<div>Halaman Manajemen User</div>} />
+            <Route path="stats" element={<div>Halaman Statistik</div>} />
+            <Route path="settings" element={<div>Halaman Pengaturan</div>} />
+          </Route>
+          
+          {/* 404 */}
+          <Route path="*" element={
+            <PublicLayout>
               <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="text-center">
                   <h1 className="text-4xl font-bold text-[#19335A] mb-4">404</h1>
@@ -53,12 +108,9 @@ export default function App() {
                   </a>
                 </div>
               </div>
-            } />
-          </Routes>
-        </div>
-
-        <Footer />
-        
+            </PublicLayout>
+          } />
+        </Routes>
       </div>
     </BrowserRouter>
   );
