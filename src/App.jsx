@@ -9,13 +9,14 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import SekolahList from "./pages/dashboard/SekolahList";
 import SekolahForm from "./pages/dashboard/SekolahForm";
 import SekolahImport from "./pages/dashboard/SekolahImport";
+import SekolahDetail from "./pages/dashboard/SekolahDetail";
+import SekolahDetailPublic from "./pages/SekolahDetailPublic"; // TAMBAHKAN INI
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { getCurrentUser } from "./supabaseClient";
 
 // Import CSS Leaflet
 import 'leaflet/dist/leaflet.css';
-import SekolahDetail from "./pages/dashboard/SekolahDetail";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -73,6 +74,12 @@ export default function App() {
             </PublicLayout>
           } />
           <Route path="/login" element={<LoginPage />} />
+          {/* TAMBAHKAN ROUTE DETAIL PUBLIK */}
+          <Route path="/sekolah/:id" element={
+            <PublicLayout>
+              <SekolahDetailPublic />
+            </PublicLayout>
+          } />
           
           {/* Dashboard Routes tanpa Navbar & Footer */}
           <Route path="/dashboard" element={

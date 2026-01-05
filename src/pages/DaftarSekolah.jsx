@@ -9,24 +9,24 @@ export default function DaftarSekolah() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
-  
+
   // State untuk filter
   const [filters, setFilters] = useState({
     status: [],
     akreditasi: [],
     jenjang: []
   });
-  
+
   // State untuk pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   // Options untuk dropdown filter
   const statusOptions = ['Negeri', 'Swasta'];
   const akreditasiOptions = ['A', 'B', 'C', 'TT'];
   const jenjangOptions = ['SD', 'SMP', 'SMA', 'SMK'];
-  
+
   // Statistik
   const [stats, setStats] = useState({
     total: 0,
@@ -46,10 +46,10 @@ export default function DaftarSekolah() {
         .order('nama_sekolah', { ascending: true });
 
       if (error) throw error;
-      
+
       const sekolahData = data || [];
       console.log('Data sekolah berhasil diambil:', sekolahData.length, 'items');
-      
+
       setSekolah(sekolahData);
       setFilteredSekolah(sekolahData);
       calculateStats(sekolahData);
@@ -77,14 +77,14 @@ export default function DaftarSekolah() {
         // Hitung status
         if (item.status_sekolah === 'Negeri') newStats.negeri++;
         if (item.status_sekolah === 'Swasta') newStats.swasta++;
-        
+
         // Hitung jenjang
         const jenjang = item.jenjang_pendidikan?.toUpperCase() || '';
         if (jenjang.includes('SD')) newStats.byJenjang.SD++;
         if (jenjang.includes('SMP')) newStats.byJenjang.SMP++;
         if (jenjang.includes('SMA')) newStats.byJenjang.SMA++;
         if (jenjang.includes('SMK')) newStats.byJenjang.SMK++;
-        
+
         // Hitung akreditasi
         const akreditasi = item.akreditasi?.toUpperCase() || '';
         if (akreditasi === 'A') newStats.byAkreditasi.A++;
@@ -109,21 +109,21 @@ export default function DaftarSekolah() {
       });
 
       let result = [...sekolah];
-      
+
       // Filter berdasarkan search term
       if (searchTerm && searchTerm.trim() !== '') {
         const searchLower = searchTerm.toLowerCase().trim();
         console.log('Mencari dengan kata kunci:', searchLower);
-        
+
         result = result.filter(item => {
           const namaMatch = item.nama_sekolah?.toLowerCase().includes(searchLower) || false;
           const npsnMatch = item.npsn?.toString().includes(searchTerm) || false;
           const alamatMatch = item.alamat?.toLowerCase().includes(searchLower) || false;
           const kecamatanMatch = item.kecamatan?.toLowerCase().includes(searchLower) || false;
-          
+
           return namaMatch || npsnMatch || alamatMatch || kecamatanMatch;
         });
-        
+
         console.log('Hasil setelah search:', result.length);
       }
 
@@ -151,12 +151,12 @@ export default function DaftarSekolah() {
       if (filters.akreditasi.length > 0) {
         result = result.filter(item => {
           const akreditasi = item.akreditasi?.toUpperCase() || '';
-          
+
           if (filters.akreditasi.includes('TT')) {
             // Jika termasuk TT, tampilkan semua yang bukan A, B, atau C
             return !['A', 'B', 'C'].includes(akreditasi) || filters.akreditasi.includes(akreditasi);
           }
-          
+
           return filters.akreditasi.includes(akreditasi);
         });
         console.log('Hasil setelah filter akreditasi:', result.length);
@@ -183,19 +183,19 @@ export default function DaftarSekolah() {
       const total = data.length;
       const pages = Math.ceil(total / itemsPerPage) || 1;
       setTotalPages(pages);
-      
+
       // Pastikan currentPage valid
       const validCurrentPage = Math.min(Math.max(currentPage, 1), pages);
       if (currentPage !== validCurrentPage) {
         setCurrentPage(validCurrentPage);
       }
-      
+
       // Hitung data yang akan ditampilkan di halaman saat ini
       const startIndex = (validCurrentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       const currentData = data.slice(startIndex, endIndex);
       setDisplayedSekolah(currentData);
-      
+
       console.log('Pagination updated:', {
         total,
         pages,
@@ -282,7 +282,7 @@ export default function DaftarSekolah() {
   const getAkreditasiBadgeColor = (akreditasi) => {
     try {
       const akreditasiUpper = akreditasi?.toUpperCase() || 'TT';
-      switch(akreditasiUpper) {
+      switch (akreditasiUpper) {
         case 'A': return 'bg-green-100 text-green-800 border-green-200';
         case 'B': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
         case 'C': return 'bg-orange-100 text-orange-800 border-orange-200';
@@ -302,7 +302,7 @@ export default function DaftarSekolah() {
       const endIndex = startIndex + itemsPerPage;
       const currentData = filteredSekolah.slice(startIndex, endIndex);
       setDisplayedSekolah(currentData);
-      
+
       // Scroll ke atas dengan smooth
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -315,7 +315,7 @@ export default function DaftarSekolah() {
     try {
       const pageNumbers = [];
       const maxPagesToShow = 5;
-      
+
       if (totalPages <= maxPagesToShow) {
         // Tampilkan semua halaman jika total halaman <= 5
         for (let i = 1; i <= totalPages; i++) {
@@ -331,7 +331,7 @@ export default function DaftarSekolah() {
           pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
         }
       }
-      
+
       return pageNumbers;
     } catch (error) {
       console.error('Error dalam getPageNumbers:', error);
@@ -363,7 +363,7 @@ export default function DaftarSekolah() {
   return (
     <main className="w-full bg-gradient-to-b from-[#F0F8FF] via-white to-white pt-24 pb-12">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        
+
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -377,14 +377,14 @@ export default function DaftarSekolah() {
                 Eksplorasi data lengkap semua sekolah di Kota Pekanbaru
               </p>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Link
                 to="/peta"
                 className="px-4 py-2 bg-gradient-to-r from-[#19335A] to-[#4675C0] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
                 Lihat Peta
               </Link>
@@ -400,7 +400,7 @@ export default function DaftarSekolah() {
                 <span className="text-xs font-normal text-[#697A98] ml-1">data</span>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl border border-blue-200">
               <div className="text-xs text-blue-800 font-medium mb-1">Sekolah Negeri</div>
               <div className="text-xl font-bold text-[#19335A]">
@@ -408,7 +408,7 @@ export default function DaftarSekolah() {
                 <span className="text-xs font-normal text-[#697A98] ml-1">sekolah</span>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-green-50 to-white p-4 rounded-xl border border-green-200">
               <div className="text-xs text-green-800 font-medium mb-1">Sekolah Swasta</div>
               <div className="text-xl font-bold text-[#19335A]">
@@ -416,7 +416,7 @@ export default function DaftarSekolah() {
                 <span className="text-xs font-normal text-[#697A98] ml-1">sekolah</span>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-slate-50 to-white p-4 rounded-xl border border-slate-200">
               <div className="text-xs text-slate-800 font-medium mb-1">Berakreditasi A</div>
               <div className="text-xl font-bold text-[#19335A]">
@@ -424,7 +424,7 @@ export default function DaftarSekolah() {
                 <span className="text-xs font-normal text-[#697A98] ml-1">sekolah</span>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-slate-50 to-white p-4 rounded-xl border border-slate-200">
               <div className="text-xs text-slate-800 font-medium mb-1">Halaman</div>
               <div className="text-xl font-bold text-[#19335A]">
@@ -437,16 +437,16 @@ export default function DaftarSekolah() {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
-          
+
           {/* Sidebar Filter */}
           <div className="lg:col-span-1 space-y-4 lg:sticky lg:top-28 z-10">
             {/* Search Box */}
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
               <div className="relative">
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" 
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
                   type="text"
@@ -480,12 +480,12 @@ export default function DaftarSekolah() {
               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 className="font-bold text-[#19335A] flex items-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
                   Filter Data
                 </h3>
-                <button 
+                <button
                   onClick={handleResetFilters}
                   className="text-xs font-medium text-[#4675C0] hover:text-[#19335A] hover:underline transition-colors"
                 >
@@ -504,21 +504,20 @@ export default function DaftarSekolah() {
                     {statusOptions.map((status) => (
                       <label key={status} className="flex items-center gap-3 cursor-pointer group">
                         <div className="relative flex items-center">
-                          <input 
-                            type="checkbox" 
+                          <input
+                            type="checkbox"
                             checked={filters.status.includes(status)}
                             onChange={() => handleFilterChange('status', status)}
-                            className="peer h-4 w-4 appearance-none rounded border border-slate-300 bg-white checked:bg-[#4675C0] checked:border-[#4675C0] focus:ring-2 focus:ring-[#4675C0]/20 transition-all" 
+                            className="peer h-4 w-4 appearance-none rounded border border-slate-300 bg-white checked:bg-[#4675C0] checked:border-[#4675C0] focus:ring-2 focus:ring-[#4675C0]/20 transition-all"
                           />
-                          <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity" 
-                               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
                           </svg>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${
-                            status === 'Negeri' ? 'bg-blue-500' : 'bg-green-500'
-                          }`}></div>
+                          <div className={`w-3 h-3 rounded-full ${status === 'Negeri' ? 'bg-blue-500' : 'bg-green-500'
+                            }`}></div>
                           <span className="text-sm text-[#697A98] group-hover:text-[#4675C0] transition-colors">
                             {status}
                           </span>
@@ -539,14 +538,14 @@ export default function DaftarSekolah() {
                     {jenjangOptions.map((jenjang) => (
                       <label key={jenjang} className="flex items-center gap-3 cursor-pointer group">
                         <div className="relative flex items-center">
-                          <input 
-                            type="checkbox" 
+                          <input
+                            type="checkbox"
                             checked={filters.jenjang.includes(jenjang)}
                             onChange={() => handleFilterChange('jenjang', jenjang)}
-                            className="peer h-4 w-4 appearance-none rounded border border-slate-300 bg-white checked:bg-[#4675C0] checked:border-[#4675C0] focus:ring-2 focus:ring-[#4675C0]/20 transition-all" 
+                            className="peer h-4 w-4 appearance-none rounded border border-slate-300 bg-white checked:bg-[#4675C0] checked:border-[#4675C0] focus:ring-2 focus:ring-[#4675C0]/20 transition-all"
                           />
-                          <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity" 
-                               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
                           </svg>
                         </div>
@@ -573,25 +572,24 @@ export default function DaftarSekolah() {
                   <div className="grid grid-cols-2 gap-2">
                     {akreditasiOptions.map((akreditasi) => (
                       <label key={akreditasi} className="cursor-pointer">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={filters.akreditasi.includes(akreditasi)}
                           onChange={() => handleFilterChange('akreditasi', akreditasi)}
-                          className="peer sr-only" 
+                          className="peer sr-only"
                         />
                         <div className={`
                           p-3 rounded-lg border transition-all transform hover:scale-[1.02]
                           peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-[#4675C0]/30
-                          ${filters.akreditasi.includes(akreditasi) 
-                            ? 'border-[#4675C0] bg-white shadow-sm' 
+                          ${filters.akreditasi.includes(akreditasi)
+                            ? 'border-[#4675C0] bg-white shadow-sm'
                             : 'border-slate-200 bg-slate-50 hover:bg-white'}
                         `}>
                           <div className="flex flex-col items-center">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              akreditasi === 'A' ? 'bg-green-500' :
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${akreditasi === 'A' ? 'bg-green-500' :
                               akreditasi === 'B' ? 'bg-yellow-500' :
-                              akreditasi === 'C' ? 'bg-orange-500' : 'bg-red-500'
-                            } text-white font-bold text-sm mb-1`}>
+                                akreditasi === 'C' ? 'bg-orange-500' : 'bg-red-500'
+                              } text-white font-bold text-sm mb-1`}>
                               {akreditasi}
                             </div>
                             <div className="text-xs font-medium text-[#19335A]">
@@ -609,16 +607,15 @@ export default function DaftarSekolah() {
                   <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
                     <div className="flex items-center gap-2 text-sm text-blue-800 mb-2">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span className="font-medium">Filter Aktif:</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {filters.status.map(item => (
-                        <span key={item} className={`text-xs px-2 py-1 rounded font-medium ${
-                          item === 'Negeri' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                        }`}>
+                        <span key={item} className={`text-xs px-2 py-1 rounded font-medium ${item === 'Negeri' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          }`}>
                           {item}
                         </span>
                       ))}
@@ -630,12 +627,11 @@ export default function DaftarSekolah() {
                         </span>
                       ))}
                       {filters.akreditasi.map(item => (
-                        <span key={item} className={`text-xs px-2 py-1 rounded font-medium ${
-                          item === 'A' ? 'bg-green-100 text-green-800' :
+                        <span key={item} className={`text-xs px-2 py-1 rounded font-medium ${item === 'A' ? 'bg-green-100 text-green-800' :
                           item === 'B' ? 'bg-yellow-100 text-yellow-800' :
-                          item === 'C' ? 'bg-orange-100 text-orange-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
+                            item === 'C' ? 'bg-orange-100 text-orange-800' :
+                              'bg-red-100 text-red-800'
+                          }`}>
                           {item === 'TT' ? 'Lainnya' : item}
                         </span>
                       ))}
@@ -695,7 +691,7 @@ export default function DaftarSekolah() {
                     <span className="font-bold text-[#19335A]">{filteredSekolah.length}</span> sekolah
                     <span className="text-xs block sm:inline"> ({itemsPerPage} per halaman)</span>
                   </div>
-              
+
                 </div>
 
                 {/* School Cards Grid */}
@@ -703,16 +699,16 @@ export default function DaftarSekolah() {
                   {displayedSekolah.map((item) => {
                     const imageUrl = getImageUrl(item.gambar);
                     const jenjangColor = getJenjangColor(item.jenjang_pendidikan);
-                    
+
                     return (
                       <div key={item.id} className="group">
                         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                          
+
                           {/* Gambar Sekolah */}
                           <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
                             {imageUrl ? (
-                              <img 
-                                src={imageUrl} 
+                              <img
+                                src={imageUrl}
                                 alt={item.nama_sekolah}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
@@ -721,7 +717,7 @@ export default function DaftarSekolah() {
                                 }}
                               />
                             ) : (
-                              <div 
+                              <div
                                 className="w-full h-full flex flex-col items-center justify-center p-4 text-center"
                                 style={{ backgroundColor: `${jenjangColor}15` }}
                               >
@@ -731,22 +727,21 @@ export default function DaftarSekolah() {
                                 </div>
                               </div>
                             )}
-                            
+
                             {/* Badge Jenjang di atas gambar */}
-                            <div 
+                            <div
                               className="absolute top-3 left-3 px-3 py-1 rounded-full text-white text-xs font-bold shadow-md"
                               style={{ backgroundColor: jenjangColor }}
                             >
                               {item.jenjang_pendidikan || 'Sekolah'}
                             </div>
-                            
+
                             {/* Badge Status di atas gambar */}
                             {item.status_sekolah && (
-                              <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold shadow-md ${
-                                item.status_sekolah === 'Negeri' 
-                                  ? 'bg-blue-500 text-white' 
-                                  : 'bg-green-500 text-white'
-                              }`}>
+                              <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold shadow-md ${item.status_sekolah === 'Negeri'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-green-500 text-white'
+                                }`}>
                                 {item.status_sekolah}
                               </div>
                             )}
@@ -758,7 +753,7 @@ export default function DaftarSekolah() {
                             <h3 className="font-bold text-lg text-[#19335A] mb-2 line-clamp-1" title={item.nama_sekolah}>
                               {item.nama_sekolah}
                             </h3>
-                            
+
                             {/* Info Bar */}
                             <div className="flex items-center justify-between mb-3">
                               <div className="text-xs text-slate-500">
@@ -771,12 +766,12 @@ export default function DaftarSekolah() {
 
                             {/* Lokasi */}
                             <div className="flex items-start gap-2 mb-3">
-                              <svg className="w-4 h-4 text-[#697A98] mt-0.5 flex-shrink-0" 
-                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                              <svg className="w-4 h-4 text-[#697A98] mt-0.5 flex-shrink-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
                               <div className="min-w-0">
                                 <div className="text-sm font-medium text-[#19335A] mb-0.5 line-clamp-1">
@@ -791,10 +786,10 @@ export default function DaftarSekolah() {
                             {/* Kontak */}
                             {item.no_telepon && (
                               <div className="flex items-center gap-2 mb-3">
-                                <svg className="w-4 h-4 text-[#697A98] flex-shrink-0" 
-                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                <svg className="w-4 h-4 text-[#697A98] flex-shrink-0"
+                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                                 <span className="text-sm text-[#19335A] truncate">
                                   {item.no_telepon}
@@ -825,21 +820,22 @@ export default function DaftarSekolah() {
                               <div className="text-xs text-slate-500">
                                 <span className="inline-flex items-center gap-1">
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                   {item.updated_at ? new Date(item.updated_at).toLocaleDateString('id-ID') : '-'}
                                 </span>
                               </div>
+                              {/* UBAH LINK INI: dari /peta menjadi /dashboard/sekolah/detail/{id} */}
                               <Link
-                                to={`/peta?lat=${item.latitude}&lng=${item.longitude}&school=${item.id}`}
-                                className="text-xs text-[#4675C0] hover:text-[#19335A] font-medium flex items-center gap-1 group/link"
+                                to={`/sekolah/${item.id}`}
+                                className="text-xs bg-gradient-to-r from-[#19335A] to-[#4675C0] text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity font-medium flex items-center gap-1 group/link"
                               >
-                                <span>Lihat di Peta</span>
-                                <svg className="w-3 h-3 transition-transform group-hover/link:translate-x-1" 
-                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                        d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                <span>Detail</span>
+                                <svg className="w-3 h-3 transition-transform group-hover/link:translate-x-1"
+                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
                               </Link>
                             </div>
@@ -858,7 +854,7 @@ export default function DaftarSekolah() {
                         Menampilkan {Math.min((currentPage - 1) * itemsPerPage + 1, filteredSekolah.length)} -{' '}
                         {Math.min(currentPage * itemsPerPage, filteredSekolah.length)} dari {filteredSekolah.length} sekolah
                       </div>
-                      
+
                       <div className="flex items-center gap-1">
                         {/* Tombol Previous */}
                         <button
@@ -867,11 +863,11 @@ export default function DaftarSekolah() {
                           className="px-3 py-2 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                           </svg>
                           Sebelumnya
                         </button>
-                        
+
                         {/* Tombol Halaman */}
                         <div className="flex items-center gap-1 mx-2">
                           {getPageNumbers().map((page, index) => (
@@ -883,18 +879,17 @@ export default function DaftarSekolah() {
                               <button
                                 key={page}
                                 onClick={() => goToPage(page)}
-                                className={`px-3 py-2 text-sm rounded transition-colors ${
-                                  currentPage === page
-                                    ? 'bg-gradient-to-r from-[#19335A] to-[#4675C0] text-white'
-                                    : 'border border-slate-300 text-slate-700 hover:bg-slate-50'
-                                }`}
+                                className={`px-3 py-2 text-sm rounded transition-colors ${currentPage === page
+                                  ? 'bg-gradient-to-r from-[#19335A] to-[#4675C0] text-white'
+                                  : 'border border-slate-300 text-slate-700 hover:bg-slate-50'
+                                  }`}
                               >
                                 {page}
                               </button>
                             )
                           ))}
                         </div>
-                        
+
                         {/* Tombol Next */}
                         <button
                           onClick={() => goToPage(currentPage + 1)}
@@ -903,12 +898,12 @@ export default function DaftarSekolah() {
                         >
                           Selanjutnya
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Page Jump */}
                     <div className="flex justify-center items-center gap-2 mt-4">
                       <span className="text-sm text-[#697A98]">Lompat ke halaman:</span>
